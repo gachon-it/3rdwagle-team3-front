@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // intl 추가해야 함 - pubspec.yaml에
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:muramura/repository/diary_repository.dart';
 import 'package:muramura/screen/home_screen.dart';
 import 'package:muramura/viewmodel/diary_input_viewmodel.dart';
 import 'package:muramura/viewmodel/diary_viewmodel.dart';
@@ -28,4 +29,10 @@ void main() async {
       ),
     ),
   );
+}
+
+void test() async {
+  final data = await DiaryRepository()
+      .getDiaryFromAI("C:\\Users\\kmj02\\Downloads\\yourvoice.wav", "Good");
+  print('${data.comment} ${data.content}, ${data.emotion}');
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:muramura/const/colors.dart';
+import 'package:muramura/screen/date_detail.dart';
 import 'package:muramura/screen/emotion_picker.dart';
 import 'package:muramura/screen/loading.dart';
 import 'package:muramura/screen/result_screen.dart';
@@ -82,7 +83,8 @@ class VoiceDetection extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const EmotionPicker()),
+                              builder: (context) => const DateDetail(),
+                            ), //TODO : noly test!
                           );
                         },
                         child: const Text(
