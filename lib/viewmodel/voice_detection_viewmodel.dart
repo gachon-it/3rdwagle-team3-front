@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:muramura/const/emotions.dart';
 import 'package:muramura/model/diary.dart';
 import 'package:muramura/repository/diary_repository.dart';
+import 'package:muramura/screen/date_detail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
@@ -13,6 +15,12 @@ class VoiceDetectionViewmodel extends ChangeNotifier {
   bool isRecording = false;
   String? savedFilePath;
   String? emotion;
+
+  void init() {
+    savedFilePath = null;
+    emotion = null;
+    isRecording = false;
+  }
 
   Future<String> getInternalStoragePath(
     String fileName,
@@ -28,7 +36,7 @@ class VoiceDetectionViewmodel extends ChangeNotifier {
     if (await _record.hasPermission()) {
       await _record.start(
         RecordConfig(),
-        path: await getInternalStoragePath('${DateTime.now()}.m4a'),
+        path: await getInternalStoragePath('${DateTime.now()}.wav'),
       );
       isRecording = true;
       notifyListeners(); // UI 업데이트
@@ -38,6 +46,7 @@ class VoiceDetectionViewmodel extends ChangeNotifier {
   // 녹음 종료
   Future<void> stopRecording() async {
     savedFilePath = await _record.stop();
+    print("Recorded file path: $savedFilePath");
     isRecording = false;
     notifyListeners(); // UI 업데이트
   }
@@ -58,7 +67,18 @@ class VoiceDetectionViewmodel extends ChangeNotifier {
     }
   }
 
-  void onSave() {
-    DiaryRepository().addDiaryFromAI(DateTime.now(), savedFilePath!, emotion!);
+  Future<void> onSave(BuildContext context) async {
+    final data0 = await DiaryRepository().addDiaryFromAI(
+        DateTime.now(), savedFilePath!, emotion ?? Emotions.GOOD);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (BuildContext context) {
+        return DateDetail(
+          data: data0,
+          date: DateTime.now(),
+        );
+      }),
+    );
   }
 }

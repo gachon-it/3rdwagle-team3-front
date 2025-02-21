@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:muramura/const/colors.dart';
-import 'package:muramura/viewmodel/diary_viewmodel.dart';
+import 'package:muramura/viewmodel/home_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class TodayBanner extends StatelessWidget {
   const TodayBanner({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final selectedDay = context.watch<DiaryViewmodel>().selectedDay;
+    final selectedDay = context.watch<HomeScreenViewmodel>().selectedDay;
     return Container(
       color: primaryColor,
       child: Padding(

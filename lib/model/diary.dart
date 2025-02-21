@@ -46,18 +46,34 @@ class DiaryEntry {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = {};
     diary.forEach((key, value) {
-      json[key.toIso8601String().split('T')[0]] =
-          value.map((entry) => entry.toJson()).toList();
+      json[date2String(key)] = value.map((entry) => entry.toJson()).toList();
     });
     return json;
   }
 
   void add(DateTime date, DiaryModel entry) {
-    if (diary.containsKey(date)) {
-      diary[date]!.add(entry);
+    final date0 = formatDateTime(date);
+    if (diary.containsKey(date0)) {
+      diary[date0]!.add(entry);
     } else {
-      diary[date] = [entry];
+      diary[date0] = [entry];
     }
+  }
+
+  List<DiaryModel>? get(DateTime date) {
+    if (diary.containsKey(date)) {
+      return diary[date];
+    } else {
+      return null;
+    }
+  }
+
+  String date2String(DateTime date) {
+    return date.toIso8601String().split('T')[0];
+  }
+
+  DateTime formatDateTime(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
   }
 }
 

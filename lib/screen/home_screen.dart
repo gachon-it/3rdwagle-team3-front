@@ -8,15 +8,28 @@ import 'package:muramura/const/colors.dart';
 import 'package:muramura/component/calendar.dart';
 import 'package:muramura/screen/date_detail.dart';
 import 'package:muramura/screen/voice_detection.dart';
-import 'package:muramura/viewmodel/diary_viewmodel.dart';
+import 'package:muramura/viewmodel/home_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<HomeScreenViewmodel>(context, listen: false)
+        .getEmotions(DateTime.now());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<DiaryViewmodel>(context);
+    final vm = Provider.of<HomeScreenViewmodel>(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           backgroundColor: primaryColor,
@@ -44,45 +57,24 @@ class HomeScreen extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-              child: ListView(
-                children: [
-                  GestureDetector(
+              child: ListView.builder(
+                itemCount: vm.diaryList.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => DateDetail(), // 내용 전달
+                          builder: (context) => DateDetail(
+                              date: vm.selectedDay,
+                              data: vm.diaryList[index]), // 내용 전달
                         ),
                       );
                     },
                     child: DiaryBlock(
-                      content: '슬프다',
+                      content: vm.diaryList[index].content.substring(0, 10),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DateDetail(),
-                        ),
-                      );
-                    },
-                    child: DiaryBlock(
-                      content: '기쁘다',
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DateDetail(),
-                        ),
-                      );
-                    },
-                    child: DiaryBlock(
-                      content: '집 가고 싶다',
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ),

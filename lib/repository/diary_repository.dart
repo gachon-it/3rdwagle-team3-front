@@ -9,22 +9,38 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DiaryRepository {
   static const String _DIARY = 'diary';
-  static const String _API_URL = 'http://localhost:5000/api/stt';
+  static const String _API_URL = 'http://192.168.11.186:5000/api/stt';
+
   DiaryRepository();
 
-  Future<DiaryEntry> getDiaryList() async {
+  Future<DiaryEntry> loadDiaryStroage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString('diary');
     if (jsonString == null) {
       return DiaryEntry(diary: {});
     }
+    try {
+      return DiaryEntry.fromJson(jsonDecode(jsonString));
+    } catch (e) {
+      prefs.clear();
+      throw Exception(e);
+    }
+  }
 
-    return DiaryEntry.fromJson(jsonDecode(jsonString));
+  Future<DiaryEntry> getDiaryEntry(DateTime date) async {
+    DiaryEntry diaryEntry = await loadDiaryStroage();
+    DiaryEntry diaryEntry0 = DiaryEntry(diary: {date: diaryEntry.diary[date]!});
+    return diaryEntry0;
+  }
+
+  Future<List<DiaryModel>> getDiaryList(DateTime date) async {
+    DiaryEntry diaryEntry = await loadDiaryStroage();
+    return diaryEntry.get(date) ?? [];
   }
 
   Future<bool> addDiary(DateTime date, DiaryModel data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    DiaryEntry diaryEntry = await getDiaryList();
+    DiaryEntry diaryEntry = await loadDiaryStroage();
     diaryEntry.add(date, data);
 
     return await prefs.setString(_DIARY, jsonEncode(diaryEntry.toJson()));
@@ -44,6 +60,7 @@ class DiaryRepository {
     FormData formData = FormData.fromMap(
       {
         "audio": await MultipartFile.fromFile(filePath),
+        "emotion": emotion,
       },
     );
 
@@ -63,10 +80,12 @@ class DiaryRepository {
     }
   }
 
-  Future<bool> addDiaryFromAI(
+  Future<DiaryModel> addDiaryFromAI(
       DateTime date, String filePath, String emotion) async {
+    final data = await getDiaryFromAI(filePath, emotion);
+    await addDiary(date, data);
     // 파일 검증
-    return await addDiary(date, await getDiaryFromAI(filePath, emotion));
+    return data;
   }
 
   // 멀티미디어어 파일을 전송하는 함수

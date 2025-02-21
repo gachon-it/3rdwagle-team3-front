@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:muramura/screen/voice_detection.dart';
+import 'package:muramura/viewmodel/voice_detection_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-class Loading extends StatelessWidget {
-  const Loading({Key? key}) : super(key: key);
+class Loading extends StatefulWidget {
+  const Loading({super.key});
+
+  @override
+  State<Loading> createState() => _LoadingState();
+}
+
+class _LoadingState extends State<Loading> {
+  @override
+  void initState() {
+    super.initState();
+    final vm = Provider.of<VoiceDetectionViewmodel>(context, listen: false);
+    vm.onSave(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +27,7 @@ class Loading extends StatelessWidget {
           children: [
             Image.asset(
               'assets/animations/loading.gif',
-              width: 20,
+              width: 200,
               height: 200,
             ),
             const SizedBox(height: 40),

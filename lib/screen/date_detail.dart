@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:muramura/model/diary.dart';
 
 class DateDetail extends StatelessWidget {
-  const DateDetail({super.key});
+  DateTime date;
+  DiaryModel data;
+  DateDetail({super.key, required this.date, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class DateDetail extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '2025년 2월 2일',
+                      date.toIso8601String().split('T')[0],
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -54,7 +57,7 @@ class DateDetail extends StatelessWidget {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('나는 오늘 해커톤에 왔다. 재밌었다.'),
+                          child: Text(data.content),
                         ),
                       ),
                     ),
@@ -99,7 +102,7 @@ class DateDetail extends StatelessWidget {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('나는 오늘 해커톤에 왔다. 재밌었다.'),
+                          child: Text(data.content),
                         ),
                       ),
                     ),

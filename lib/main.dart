@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:muramura/repository/diary_repository.dart';
 import 'package:muramura/screen/home_screen.dart';
-import 'package:muramura/viewmodel/diary_input_viewmodel.dart';
-import 'package:muramura/viewmodel/diary_viewmodel.dart';
+import 'package:muramura/viewmodel/date_detail_viewmodel.dart';
+import 'package:muramura/viewmodel/home_screen_viewmodel.dart';
 import 'package:muramura/viewmodel/voice_detection_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -16,8 +16,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => DiaryViewmodel()),
-        ChangeNotifierProvider(create: (_) => DiaryInputViewmodel()),
+        ChangeNotifierProvider(create: (_) => HomeScreenViewmodel()),
+        ChangeNotifierProvider(create: (_) => DateDetailViewModel()),
         ChangeNotifierProvider(create: (_) => VoiceDetectionViewmodel()),
       ],
       child: MaterialApp(
