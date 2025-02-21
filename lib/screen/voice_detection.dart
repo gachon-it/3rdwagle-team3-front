@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:muramura/const/colors.dart';
+import 'package:muramura/screen/date_detail.dart';
 import 'package:muramura/screen/loading.dart';
 import 'package:muramura/screen/result_screen.dart';
-import 'package:muramura/viewmodel/voice_detection_vm.dart';
+import 'package:muramura/viewmodel/voice_detection_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class VoiceDetection extends StatefulWidget {
@@ -85,7 +86,8 @@ class _VoiceDetectionState extends State<VoiceDetection> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Loading()),
+                              builder: (context) => const DateDetail(),
+                            ), //TODO : noly test!
                           );
                         },
                         child: const Text(
