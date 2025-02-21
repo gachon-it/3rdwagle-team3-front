@@ -28,19 +28,19 @@ class DiaryModel {
   }
 }
 
-class DiaryEntries {
+class DiaryEntry {
   final Map<DateTime, List<DiaryModel>> diary;
 
-  DiaryEntries({required this.diary});
+  DiaryEntry({required this.diary});
 
-  factory DiaryEntries.fromJson(Map<String, dynamic> json) {
+  factory DiaryEntry.fromJson(Map<String, dynamic> json) {
     final Map<DateTime, List<DiaryModel>> diaryEntries = {};
     json.forEach((key, value) {
       DateTime date = DateTime.parse(key);
       diaryEntries[date] =
           (value as List).map((entry) => DiaryModel.fromJson(entry)).toList();
     });
-    return DiaryEntries(diary: diaryEntries);
+    return DiaryEntry(diary: diaryEntries);
   }
 
   Map<String, dynamic> toJson() {
@@ -87,7 +87,7 @@ void testDiaryRepository() {
 
   // JSON -> 객체 변환
   Map<String, dynamic> jsonMap = json.decode(jsonString);
-  DiaryEntries diary = DiaryEntries.fromJson(jsonMap);
+  DiaryEntry diary = DiaryEntry.fromJson(jsonMap);
 
   // 새로운 다이어리 항목 추가
   diary.add(DateTime.parse("2025-01-01"),
