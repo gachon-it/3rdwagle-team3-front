@@ -13,7 +13,7 @@ class Loading extends StatelessWidget {
             Image.asset(
               'assets/animations/loading.gif',
               width: 20,
-              height: 20,
+              height: 200,
             ),
             const SizedBox(height: 40),
             Text(
