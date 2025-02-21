@@ -2,89 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:muramura/const/colors.dart';
 import 'package:muramura/screen/loading.dart';
 import 'package:muramura/screen/result_screen.dart';
+import 'package:muramura/viewmodel/voice_detection_vm.dart';
+import 'package:provider/provider.dart';
 
 class VoiceDetection extends StatefulWidget {
-  const VoiceDetection({Key? key}) : super(key: key);
+  const VoiceDetection({super.key});
 
   @override
   State<VoiceDetection> createState() => _VoiceDetectionState();
 }
 
 class _VoiceDetectionState extends State<VoiceDetection> {
-  bool _isListening = false;
-  bool _isRecordingDone = false; // 녹음 완료 상태 추가
-
-  void _resetRecording() {
-    setState(() {
-      _isListening = false;
-      _isRecordingDone = false;
-    });
-  }
-
-  void _saveRecording() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => Loading(),
-      ),
-    );
-  }
-
-  // 서버 통신을 시뮬레이션하는 Future 함수 추가
-  Future<Map<String, dynamic>> processVoiceData() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return {
-      'text': '오늘은 정말 좋은 날이었어요...',
-      'emotion': 'happy',
-    };
-  }
-
-  void _handleSave() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => FutureBuilder(
-        future: processVoiceData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Loading();
-          }
-
-          if (snapshot.hasData) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResultScreen(),
-                ),
-              );
-            });
-          }
-
-          return const Loading();
-        },
-      ),
-    );
-  }
-
-  void _handleTap() {
-    setState(() {
-      if (_isListening) {
-        // 녹음 중 -> 녹음 완료(정사각형)
-        _isListening = false;
-        _isRecordingDone = true;
-      } else if (_isRecordingDone) {
-        // 녹음 완료 -> 새로운 녹음 시작(다시하기)
-        _isRecordingDone = false;
-        _isListening = true;
-      } else {
-        // 초기 상태 -> 녹음 시작(마이크)
-        _isListening = true;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final vm = Provider.of<VoiceDetectionViewmodel>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('일기 쓰기'),
@@ -97,7 +29,7 @@ class _VoiceDetectionState extends State<VoiceDetection> {
               child: Container(),
             ),
             GestureDetector(
-              onTap: _handleTap,
+              onTap: vm.handleTap,
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -105,9 +37,11 @@ class _VoiceDetectionState extends State<VoiceDetection> {
                   color: Colors.grey[200],
                 ),
                 child: Icon(
-                  _isListening
+                  vm.isListening
                       ? Icons.stop
-                      : (_isRecordingDone ? Icons.refresh : Icons.mic_rounded),
+                      : (vm.isRecordingDone
+                          ? Icons.refresh
+                          : Icons.mic_rounded),
                   size: 80,
                   color: Colors.grey[600],
                 ),
@@ -118,7 +52,7 @@ class _VoiceDetectionState extends State<VoiceDetection> {
               flex: 1,
               child: Column(
                 children: [
-                  if (_isListening) ...[
+                  if (vm.isListening) ...[
                     const SizedBox(height: 40),
                     Text(
                       '듣고 있어요...',
@@ -127,7 +61,7 @@ class _VoiceDetectionState extends State<VoiceDetection> {
                         color: Colors.grey[600],
                       ),
                     ),
-                  ] else if (_isRecordingDone) ...[
+                  ] else if (vm.isRecordingDone) ...[
                     const SizedBox(height: 40),
                     Text(
                       '다시 녹음하시려면 버튼을 눌러주세요',
