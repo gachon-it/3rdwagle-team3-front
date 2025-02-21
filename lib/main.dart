@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// intl 추가해야 함 - pubspec.yaml에에
+// intl 추가해야 함 - pubspec.yaml에
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:muramura/screen/home_screen.dart';
 
