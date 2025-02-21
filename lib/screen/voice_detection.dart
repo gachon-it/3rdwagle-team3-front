@@ -26,50 +26,52 @@ class VoiceDetection extends StatelessWidget {
               flex: 1,
               child: Container(),
             ),
-            GestureDetector(
-              onTap: vm.handleTap,
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[200],
-                ),
-                child: Icon(
-                  vm.isListening
-                      ? Icons.stop
-                      : (vm.isRecordingDone
-                          ? Icons.refresh
-                          : Icons.mic_rounded),
-                  size: 80,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Column(
                 children: [
-                  if (vm.isListening) ...[
-                    const SizedBox(height: 40),
-                    Text(
-                      '듣고 있어요...',
-                      style: TextStyle(
-                        fontSize: 16,
+                  vm.isRecording
+                      ? Text(
+                          '듣고 있어요...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        )
+                      : (vm.savedFilePath == null
+                          ? Text('')
+                          : Text(
+                              '다시 녹음하시려면 버튼을 눌러주세요',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            )),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: vm.handleTap,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey[200],
+                      ),
+                      child: Icon(
+                        vm.isRecording
+                            ? Icons.stop
+                            : (vm.isRecording
+                                ? Icons.refresh
+                                : Icons.mic_rounded),
+                        size: 80,
                         color: Colors.grey[600],
                       ),
                     ),
-                  ] else if (vm.isRecordingDone) ...[
-                    const SizedBox(height: 40),
-                    Text(
-                      '다시 녹음하시려면 버튼을 눌러주세요',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  if (!vm.isRecording && vm.savedFilePath != null)
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
@@ -83,29 +85,18 @@ class VoiceDetection extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const DateDetail(),
-                            ), //TODO : noly test!
+                              builder: (context) => const EmotionPicker(),
+                            ),
                           );
                         },
                         child: const Text(
-                          '저장',
+                          '다음',
                           style: TextStyle(
                             color: primaryColor,
                           ),
                         ),
                       ),
-                    )
-                  ] else ...[
-                    const SizedBox(height: 40),
-                    Text(
-                      '마이크를 눌러서\n일기 쓰기를 시작하세요',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
                     ),
-                  ],
                 ],
               ),
             ),

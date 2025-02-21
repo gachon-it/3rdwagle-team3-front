@@ -12,7 +12,7 @@ class DiaryRepository {
   static const String _API_URL = 'http://localhost:5000/api/stt';
   DiaryRepository();
 
-  Future<DiaryEntry> getDiaryList(DateTime date) async {
+  Future<DiaryEntry> getDiaryList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString('diary');
     if (jsonString == null) {
@@ -24,7 +24,7 @@ class DiaryRepository {
 
   Future<bool> addDiary(DateTime date, DiaryModel data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    DiaryEntry diaryEntry = await getDiaryList(date);
+    DiaryEntry diaryEntry = await getDiaryList();
     diaryEntry.add(date, data);
 
     return await prefs.setString(_DIARY, jsonEncode(diaryEntry.toJson()));
@@ -61,6 +61,12 @@ class DiaryRepository {
     } catch (e) {
       throw Exception(e);
     }
+  }
+
+  Future<bool> addDiaryFromAI(
+      DateTime date, String filePath, String emotion) async {
+    // 파일 검증
+    return await addDiary(date, await getDiaryFromAI(filePath, emotion));
   }
 
   // 멀티미디어어 파일을 전송하는 함수

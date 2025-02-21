@@ -1,66 +1,64 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:muramura/model/diary.dart';
+import 'package:muramura/repository/diary_repository.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:record/record.dart';
 
 class VoiceDetectionViewmodel extends ChangeNotifier {
-  bool isListening = false;
-  bool isRecordingDone = false; // 녹음 완료 상태 추가
+  final _record = AudioRecorder();
 
-  void resetRecording() {
-    isListening = false;
-    isRecordingDone = false;
+  bool isRecording = false;
+  String? savedFilePath;
+  String? emotion;
+
+  Future<String> getInternalStoragePath(
+    String fileName,
+  ) async {
+    // 앱 내부 저장소 디렉토리 가져오기
+    Directory appDir = await getTemporaryDirectory();
+
+    return "${appDir.path}/$fileName";
+  }
+
+  //녹음 시작
+  Future<void> startRecording() async {
+    if (await _record.hasPermission()) {
+      await _record.start(
+        RecordConfig(),
+        path: await getInternalStoragePath('${DateTime.now()}.m4a'),
+      );
+      isRecording = true;
+      notifyListeners(); // UI 업데이트
+    }
+  }
+
+  // 녹음 종료
+  Future<void> stopRecording() async {
+    savedFilePath = await _record.stop();
+    isRecording = false;
+    notifyListeners(); // UI 업데이트
+  }
+
+  // 녹음 중지 (에러 처리용)
+  Future<void> cancelRecording() async {
+    await _record.stop();
+    isRecording = false;
+    savedFilePath = null;
     notifyListeners();
   }
 
-  // 서버 통신을 시뮬레이션하는 Future 함수 추가
-  // Future<Map<String, dynamic>> processVoiceData() async {
-  //   await Future.delayed(const Duration(seconds: 3));
-  //   return {
-  //     'text': '오늘은 정말 좋은 날이었어요...',
-  //     'emotion': 'happy',
-  //   };
-  // }
-
-  // void _handleSave() {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) => FutureBuilder(
-  //       future: processVoiceData(),
-  //       builder: (context, snapshot) {
-  //         if (snapshot.connectionState == ConnectionState.waiting) {
-  //           return const Loading();
-  //         }
-
-  //         if (snapshot.hasData) {
-  //           WidgetsBinding.instance.addPostFrameCallback((_) {
-  //             Navigator.pushReplacement(
-  //               context,
-  //               MaterialPageRoute(
-  //                 builder: (context) => ResultScreen(),
-  //               ),
-  //             );
-  //           });
-  //         }
-
-  //         return const Loading();
-  //       },
-  //     ),
-  //   );
-  // }
-
   void handleTap() {
-    if (isListening) {
-      // 녹음 중 -> 녹음 완료(정사각형)
-      isListening = false;
-      isRecordingDone = true;
-    } else if (isRecordingDone) {
-      // 녹음 완료 -> 새로운 녹음 시작(다시하기)
-      isRecordingDone = false;
-      isListening = true;
+    if (isRecording) {
+      stopRecording();
     } else {
-      // 초기 상태 -> 녹음 시작(마이크)
-      isListening = true;
+      startRecording();
     }
-    notifyListeners();
+  }
+
+  void onSave() {
+    DiaryRepository().addDiaryFromAI(DateTime.now(), savedFilePath!, emotion!);
   }
 }
