@@ -33,20 +33,22 @@ class VoiceDetectionViewmodel extends ChangeNotifier {
 
   //녹음 시작
   Future<void> startRecording() async {
-    if (await _record.hasPermission()) {
+    if (await _record.hasPermission() && Platform.isAndroid) {
       await _record.start(
         RecordConfig(),
-        path: await getInternalStoragePath('${DateTime.now()}.wav'),
+        path: await getInternalStoragePath('${DateTime.now()}.m4a'),
       );
-      isRecording = true;
-      notifyListeners(); // UI 업데이트
     }
+    isRecording = true;
+    notifyListeners(); // UI 업데이트
   }
 
   // 녹음 종료
   Future<void> stopRecording() async {
-    savedFilePath = await _record.stop();
-    print("Recorded file path: $savedFilePath");
+    if (Platform.isAndroid)
+      savedFilePath = await _record.stop();
+    else
+      savedFilePath = "C:\\Users\\kmj02\\Downloads\\해커톤 녹음4.wav";
     isRecording = false;
     notifyListeners(); // UI 업데이트
   }
@@ -69,9 +71,13 @@ class VoiceDetectionViewmodel extends ChangeNotifier {
 
   Future<void> onSave(BuildContext context) async {
     final data0 = await DiaryRepository().addDiaryFromAI(
-        DateTime.now(), savedFilePath!, emotion ?? Emotions.GOOD);
+        DateTime.now(),
+        savedFilePath == null
+            ? "C:\\Users\\kmj02\\Downloads\\yourvoice.wav"
+            : savedFilePath!,
+        emotion ?? Emotions.GOOD);
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (BuildContext context) {
         return DateDetail(

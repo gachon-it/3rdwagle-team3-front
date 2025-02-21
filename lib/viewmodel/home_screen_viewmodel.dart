@@ -20,6 +20,12 @@ class HomeScreenViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> getDiaryList(DateTime date) async {
+    diaryList = await DiaryRepository()
+        .getDiaryList(DateTime(date.year, date.month, date.day));
+    notifyListeners();
+  }
+
   // 선택된 날짜를 관리할 변수
   DateTime selectedDay = DateTime.utc(
     DateTime.now().year,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:muramura/model/diary.dart';
+import 'package:muramura/screen/home_screen.dart';
+import 'package:muramura/viewmodel/home_screen_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class DateDetail extends StatelessWidget {
   DateTime date;
@@ -8,6 +11,7 @@ class DateDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<HomeScreenViewmodel>(context).getDiaryList(date);
     return Scaffold(
       appBar: AppBar(
         title: Text('나의 일기'),
@@ -102,7 +106,7 @@ class DateDetail extends StatelessWidget {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(data.content),
+                          child: Text(data.comment),
                         ),
                       ),
                     ),

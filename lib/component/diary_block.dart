@@ -9,8 +9,8 @@ class DiaryBlock extends StatelessWidget {
 
   const DiaryBlock({
     required this.content,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +41,7 @@ class DiaryBlock extends StatelessWidget {
                     color: Colors.grey,
                     shape: BoxShape.circle,
                   ),
-                  // 실제 구현 시에는 아래와 같이 Image 위젯을 사용
-                  // child: Image.asset('path_to_emotion_image'),
+                  child: Image.asset('assets/img/happy.png'),
                 ),
               ],
             ),
@@ -58,8 +57,8 @@ class _Content extends StatelessWidget {
 
   const _Content({
     required this.content,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DiaryRepository {
   static const String _DIARY = 'diary';
-  static const String _API_URL = 'http://192.168.11.186:5000/api/stt';
+  static const String _API_URL = 'http://localhost:5000/api/stt';
 
   DiaryRepository();
 

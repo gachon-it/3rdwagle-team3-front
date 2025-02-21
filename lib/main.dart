@@ -21,6 +21,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => VoiceDetectionViewmodel()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           // 다른 귀여운 폰트....
           fontFamily: 'BlackHanSans',

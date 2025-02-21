@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:muramura/const/colors.dart';
 import 'package:muramura/screen/loading.dart';
+import 'package:muramura/const/emotions.dart';
 
-class EmotionPicker extends StatelessWidget {
+class EmotionPicker extends StatefulWidget {
   const EmotionPicker({super.key});
+
+  @override
+  _EmotionPickerState createState() => _EmotionPickerState();
+}
+
+class _EmotionPickerState extends State<EmotionPicker> {
+  String? selectedEmotion;
+
+  void setEmotion(String emotion) {
+    setState(() {
+      selectedEmotion = emotion;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,47 +34,45 @@ class EmotionPicker extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                    shape: BoxShape.circle,
+                GestureDetector(
+                  onTap: () => setEmotion(Emotions.GOOD),
+                  child: Image.asset(
+                    'assets/img/happy.png',
+                    width: 30,
+                    height: 30,
                   ),
-                  // 실제 구현 시에는 아래와 같이 Image 위젯을 사용
-                  // child: Image.asset('path_to_emotion_image'),
                 ),
                 const SizedBox(width: 10.0),
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                    shape: BoxShape.circle,
+                GestureDetector(
+                  onTap: () => setEmotion(Emotions.SOSO),
+                  child: Image.asset(
+                    'assets/img/soso.png',
+                    width: 30,
+                    height: 30,
                   ),
-                  // 실제 구현 시에는 아래와 같이 Image 위젯을 사용
-                  // child: Image.asset('path_to_emotion_image'),
                 ),
                 const SizedBox(width: 10.0),
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                    shape: BoxShape.circle,
+                GestureDetector(
+                  onTap: () => setEmotion(Emotions.BAD),
+                  child: Image.asset(
+                    'assets/img/sad.png',
+                    width: 30,
+                    height: 30,
                   ),
-                  // 실제 구현 시에는 아래와 같이 Image 위젯을 사용
-                  // child: Image.asset('path_to_emotion_image'),
                 ),
               ],
             ),
             const SizedBox(height: 250),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Loading()),
-                );
+                if (selectedEmotion != null) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Loading(),
+                    ),
+                  );
+                }
               },
               child: const Text(
                 '완료',

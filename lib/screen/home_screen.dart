@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     Provider.of<HomeScreenViewmodel>(context, listen: false)
-        .getEmotions(DateTime.now());
+        .getDiaryList(DateTime.now());
   }
 
   @override
@@ -47,11 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
           child: Column(
         children: [
-          Calendar(
-            focusedDay: DateTime(2025, 2, 1),
-            onDaySelected: vm.onDaySelected,
-            selectedDayPredicate: vm.selectedDayPredicate,
-          ),
           const SizedBox(height: 16),
           const TodayBanner(),
           Expanded(
