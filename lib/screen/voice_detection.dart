@@ -1,89 +1,141 @@
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:muramura/const/colors.dart';
+import 'package:muramura/screen/loading.dart';
 
 class VoiceDetection extends StatefulWidget {
-  const VoiceDetection({super.key});
+  const VoiceDetection({Key? key}) : super(key: key);
 
   @override
   State<VoiceDetection> createState() => _VoiceDetectionState();
 }
 
 class _VoiceDetectionState extends State<VoiceDetection> {
-  final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
-  String _text = '마이크를 눌러서 음성 인식을 시작하세요';
+  bool _isRecordingDone = false; // 녹음 완료 상태 추가
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeSpeech();
+  void _resetRecording() {
+    setState(() {
+      _isListening = false;
+      _isRecordingDone = false;
+    });
   }
 
-  void _initializeSpeech() async {
-    await _speech.initialize(
-      onError: (error) => print('Error: $error'),
-      onStatus: (status) => print('Status: $status'),
+  void _saveRecording() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Loading(),
+      ),
     );
   }
 
-  void _toggleListening() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize();
-      if (available) {
-        setState(() {
-          _isListening = true;
-        });
-        _speech.listen(
-          onResult: (result) {
-            setState(() {
-              _text = result.recognizedWords;
-            });
-          },
-          localeId: 'ko_KR', // 한국어 설정
-        );
-      }
-    } else {
-      setState(() {
+  void _handleTap() {
+    setState(() {
+      if (_isListening) {
+        // 녹음 중 -> 녹음 완료(정사각형)
         _isListening = false;
-      });
-      _speech.stop();
-    }
+        _isRecordingDone = true;
+      } else if (_isRecordingDone) {
+        // 녹음 완료 -> 새로운 녹음 시작(다시하기)
+        _isRecordingDone = false;
+        _isListening = true;
+      } else {
+        // 초기 상태 -> 녹음 시작(마이크)
+        _isListening = true;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('일기 쓰기'),
+      ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Expanded(
+              flex: 1,
+              child: Container(),
+            ),
             GestureDetector(
-              onTap: _toggleListening,
+              onTap: _handleTap,
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: _isListening
-                      ? Colors.red.withOpacity(0.1)
-                      : Colors.grey[200],
+                  color: Colors.grey[200],
                 ),
                 child: Icon(
-                  Icons.mic_rounded,
+                  _isListening
+                      ? Icons.stop
+                      : (_isRecordingDone ? Icons.refresh : Icons.mic_rounded),
                   size: 80,
-                  color: _isListening ? Colors.red : Colors.grey[600],
+                  color: Colors.grey[600],
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                _text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  if (_isListening) ...[
+                    const SizedBox(height: 40),
+                    Text(
+                      '듣고 있어요...',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ] else if (_isRecordingDone) ...[
+                    const SizedBox(height: 40),
+                    Text(
+                      '다시 녹음하시려면 버튼을 눌러주세요',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: primaryColor,
+                          width: 1,
+                        ),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Loading()),
+                          );
+                        },
+                        child: const Text(
+                          '저장',
+                          style: TextStyle(
+                            color: primaryColor,
+                          ),
+                        ),
+                      ),
+                    )
+                  ] else ...[
+                    const SizedBox(height: 40),
+                    Text(
+                      '마이크를 눌러서\n일기 쓰기를 시작하세요',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ],
