@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muramura/const/colors.dart';
 import 'package:muramura/screen/loading.dart';
+import 'package:muramura/screen/result_screen.dart';
 
 class VoiceDetection extends StatefulWidget {
   const VoiceDetection({Key? key}) : super(key: key);
@@ -24,6 +25,43 @@ class _VoiceDetectionState extends State<VoiceDetection> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Loading(),
+      ),
+    );
+  }
+
+  // 서버 통신을 시뮬레이션하는 Future 함수 추가
+  Future<Map<String, dynamic>> processVoiceData() async {
+    await Future.delayed(const Duration(seconds: 3));
+    return {
+      'text': '오늘은 정말 좋은 날이었어요...',
+      'emotion': 'happy',
+    };
+  }
+
+  void _handleSave() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => FutureBuilder(
+        future: processVoiceData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loading();
+          }
+
+          if (snapshot.hasData) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultScreen(),
+                ),
+              );
+            });
+          }
+
+          return const Loading();
+        },
       ),
     );
   }
